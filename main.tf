@@ -11,7 +11,7 @@ provider "aws" {
   region = var.region
 }
 
-module "learn_vpc" {
+module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "2.21.0"
 
@@ -55,12 +55,13 @@ resource "aws_instance" "example" {
                nohup busybox httpd -f -p 8080 &
                EOF
   tags = {
-    Name = "terraform-learn-move"
+    Name = "terraform-learn-move-ec2"
   }
 }
 
 resource "aws_security_group" "sg_8080" {
-  name = "terraform-learn-state-sg"
+  vpc_id = module.vpc.vpc_id
+  name   = "terraform-learn-move-sg"
   ingress {
     from_port   = "8080"
     to_port     = "8080"
