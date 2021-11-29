@@ -1,3 +1,3 @@
-output "ip" {
-  value = module.ec2_instance.public_ip[0]
+output "public_ip" {
+  value = aws_instance.example.public_ip
 }
