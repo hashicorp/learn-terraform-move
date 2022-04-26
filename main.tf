@@ -14,7 +14,7 @@ data "aws_availability_zones" "available" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "2.21.0"
+  version = "3.14.0"
 
   name = var.vpc_name
   cidr = var.vpc_cidr
@@ -23,7 +23,8 @@ module "vpc" {
   private_subnets = var.vpc_private_subnets
   public_subnets  = var.vpc_public_subnets
 
-  enable_nat_gateway = var.vpc_enable_nat_gateway
+  enable_nat_gateway      = var.vpc_enable_nat_gateway
+  map_public_ip_on_launch = true
 
   tags = var.vpc_tags
 }
@@ -46,11 +47,13 @@ data "aws_ami" "ubuntu" {
 
 
 resource "aws_instance" "example" {
-  ami                    = data.aws_ami.ubuntu.id
-  subnet_id              = module.vpc.public_subnets[0]
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.sg_8080.id]
-  user_data              = <<-EOF
+  ami                         = data.aws_ami.ubuntu.id
+  subnet_id                   = module.vpc.public_subnets[0]
+  instance_type               = "t2.micro"
+  vpc_security_group_ids      = [aws_security_group.sg_8080.id]
+  associate_public_ip_address = true
+  
+  user_data                   = <<-EOF
               #!/bin/bash
               apt-get update
               apt-get install -y apache2
